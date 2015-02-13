@@ -58,16 +58,16 @@ class Resolv < Racc::Parser
     when nil
       case
       when (text = @ss.scan(/^(domain)\s+(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/))
-         action { puts [:domain, text] }
+         action { @domain = text.split(" ")[1] }
 
-      when (text = @ss.scan(/^(search)\s+(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/))
-         action { puts [:search, text] }
+      when (text = @ss.scan(/^(search)\s+((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])\s+?)+$/))
+         action { @search = text.split(" ")[1..-1] }
 
       when (text = @ss.scan(/^(nameserver)\s+(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/))
-         action { nameservers = text.split(" "); puts Hash[nameservers.each_slice(2).to_a] }
+         action { @nameservers << text.split(" ")[1] }
 
       when (text = @ss.scan(/^(options)\s+.*$/))
-         action { puts [:options, text] }
+         action { @options << text.split(" ")[1] }
 
       when (text = @ss.scan(/^(\s*#.*|#.*)$/))
         ;
@@ -87,6 +87,13 @@ class Resolv < Racc::Parser
   end  # def _next_token
 
   require 'json'
+  require 'yaml'
+  def initialize_obj
+    @nameservers = Array.new
+    @domain = ""
+    @search = Array.new
+    @options = Array.new
+  end
   def tokenize(line)
     scan_setup(line)
     tokens = []
@@ -94,5 +101,29 @@ class Resolv < Racc::Parser
       tokens << token
     end
     tokens
+  end
+  def get_resolv
+    resolv = Hash.new
+    if !@nameservers.empty?
+      resolv[:nameservers] = @nameservers
+    end
+    if !@domain.empty?
+      resolv[:domain] = @domain
+    end
+    if !@search.empty?
+      resolv[:search] = @search
+    end
+    if !@options.empty?
+      resolv[:options] = @options
+    end
+    resolv
+  end
+  def resolv_yaml
+    resolv = Hash.new
+    get_resolv.each{|k,v| resolv[k.to_s] =v }
+    resolv.to_yaml
+  end
+  def resolv_json
+    get_resolv.to_json
   end
 end # class
