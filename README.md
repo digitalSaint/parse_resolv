@@ -25,13 +25,19 @@ options:
 
 #### JSON output from sample resolv.conf file
 ```json
-{  "nameservers": ["192.168.1.254","192.168.1.253"],
-   "domain": "local.tld",
-   "search": ["a.local.tld","b.local.tld","local.tld"],
-   "options":["rotate","timeout:1","attempts:2"]
+{
+  "nameservers": ["192.168.1.254","192.168.1.253"],
+  "domain": "local.tld",
+  "search": ["a.local.tld","b.local.tld","local.tld"],
+  "options": ["rotate","timeout:1","attempts:2"]
 }
 ```
 #### Ruby hash output from sample resolv.conf file
 ```ruby
-{:nameservers=>["192.168.1.254", "192.168.1.253"], :domain=>"local.tld", :search=>["a.local.tld", "b.local.tld", "local.tld"], :options=>["rotate", "timeout:1", "attempts:2"]}
+{
+  :nameservers => ["192.168.1.254", "192.168.1.253"],
+  :domain => "local.tld",
+  :search => ["a.local.tld", "b.local.tld", "local.tld"],
+  :options => ["rotate", "timeout:1", "attempts:2"]
+}
 ```
