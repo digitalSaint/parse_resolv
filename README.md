@@ -1,4 +1,4 @@
-##Parse resolv.conf into json or yaml
+## Parse resolv.conf into json or yaml
 
 #### Create lexer.rb
 ```rex test_resolv.rex -o lexer.rb```
